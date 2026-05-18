@@ -16,26 +16,27 @@ Controls the wheels and driving of the robot. It includes speed adjustments and 
 * **`MOTOR_ZERO_POWER_BEHAVIOR`** (`ZeroPowerBehavior` | Default: `BRAKE`): Stops the robot instantly when you let go of the stick. Use `FLOAT` if you want it to glide to a stop.
 > [!Note]
 > * Usually one of the 2 motors of the Tank-Style Drivebase is reversed because it is in the mirror position on the robot.
-> * In most cases `BRAKE` is better for drivetrains
+> * In most cases `BRAKE` is better for drivetrains.
 ### FeedForward
 Feedforward control calculates the required motor power beforehand based on physics and target speeds, correcting for factors like friction before errors even happen.
-* **`LEFT_FEEDFORWARD` / `RIGHT_FEEDFORWARD`** (`double[]` | Default: `{0.05, 1.0}`): Physics settings `{KS, KV}`. `KS` helps push through gear friction. `KV` controls straight-line speed precision.
-  *  **`KS`** - Gives a little kick to surpass static friction in the beginning of the movement (higher values give a more a aggressive kickstart usual values are 0 - 0.12)
-  * **`KV`** - Is the linear multiplier of the motor in order to match (left - right motor speeds usual values are around 0.95-1.05)
-* **`KS_THETA`** (`double` | Default: `0.0`): Extra power kick like **`KS`** but in the turning movement
+* **`LEFT_FEEDFORWARD` / `RIGHT_FEEDFORWARD`** (`double[]` | Default: `{0.05, 1.0}`): Physics settings `{KS, KV}`. `KS` helps push through gear friction. `KV` scales motor power to help both sides drive at matching speeds.
+  *  **`KS`** - Gives a small kick to overcome static friction at the start of movement (higher values give a more aggressive kickstart. Typical values are between 0.0 and 0.12.)
+  * **`KV`** - KV is the linear motor power multiplier used to match left and right motor speeds. (typical values are around 0.95–1.05)
+* **`KS_THETA`** (`double` | Default: `0.0`): Extra power kick like **`KS`** but applied to turning
 
 > [!Note]
-Experiment with `KS` values while the wheel is off the ground. The correct value is the one right before motor moves. So lets say you play around with values like 0.03, 0.05. 0.06 and the wheel starts moving at 0.07. You should use a value of 0.06.
+> * Experiment with `KS` values while the wheel is off the ground. The correct value is the one right before the motor moves. So let's say you play around with values like 0.03, 0.05. 0.06 and the wheel starts moving at 0.07. You should use a value of 0.06.
+> * Do the same for `KS_THETA` but with the robot on the floor. This compensates for the static friction of the robot while turning on its axis.
 
 ### Power Mapping
-A nice feature is using the back trigger of the gamepad to map the top speed of the robot. The driver might sometimes need small speeds for accuracy or high speeds for time efficiency. While holding the trigger on the gamepad the max speed changes linearly from `DEFAULT_POWER` to `MAX_POWER`.
+The driver might sometimes need low speeds for accuracy or high speeds for time efficiency. While holding the trigger on the gamepad, the max speed changes linearly from `DEFAULT_POWER` to `MAX_POWER`.
 * **`DEFAULT_POWER`** (`double` | Default: `0.6`): Regular driving speed.
 * **`MAX_POWER`** (`double` | Default: `1.0`): Max driving speed (Turbo mode) when holding the trigger down completely.
 
->[!NOTE]
-If you don't prefer using the mapping set both `DEFAULT_POWER` and `MAX_POWER` to 1.0
-TeamCode\src\main\java\org\firstinspires\ftc\teamcode\AngelosBase\Samples
-## 🚀 Sample Implementation ([Sample_TankDrive](TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AngelosBase/Samples/Samples/Sample_TankDrive.java))
+>[!Note]
+If you prefer not to use speed mapping set both `DEFAULT_POWER` and `MAX_POWER` to 1.0.
+
+## 🚀 Sample Implementation ([Sample_TankDrive](TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AngelosBase/Samples/Sample_TankDrive.java))
 ```java
 package org.firstinspires.ftc.teamcode.AngelosBase.Samples;
 
@@ -86,17 +87,17 @@ public class Sample_TankDrive extends LinearOpMode {
 
 # 🌀 Active Intake Subsystem
 
-Active Intake uses a constant spinning motion to intake game elements. Uses automated states (`STOPPED`, `FORWARD`, `REVERSE`) so you only have to tap a button once instead of holding it down.
+Active Intake uses a constant spinning motion to intake game elements. Uses automated states (`STOPPED`, `FORWARD`, `REVERSE`) so you only need to tap a button once instead of holding it.
 
 ### ⚙️ Settings (Variables at the top of ActiveIntake.java)
 * **`TELEMETRY_ENABLED`** (`boolean` | Default: `true`): Shows whether the intake is spinning forward, backward, or stopped.
 * **`INTAKE_MOTOR_NAME`** (`String` | Default: `"intake"`): The name of the intake motor in your configuration list.
 * **`FORWARD_VELOCITY`** (`double` | Default: `1.0`): Spinning power when pulling objects in.
-* **`REVERSE_VELOCITY`** (`double` | Default: `-1.0`): Spinning power when pushing objects out (spitting out a jam).
-* **`INTAKE_DIRECTION`** (`Direction` | Default: `FORWARD`): Flips the direction the axle spins.
+* **`REVERSE_VELOCITY`** (`double` | Default: `-1.0`): Spinning power when ejecting objects or clearing jams.
+* **`INTAKE_DIRECTION`** (`Direction` | Default: `FORWARD`): Reverses the rotation direction of the intake motor.
 * **`INTAKE_ZERO_POWER_BEHAVIOR`** (`ZeroPowerBehavior` | Default: `BRAKE`): Locks the motor immediately when turned off to keep elements from rolling out.
 
-## 🚀 Sample Implementation ([Sample_ActiveIntake](TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AngelosBase/Samples/Samples/Sample_ActiveIntake.java))
+## 🚀 Sample Implementation ([Sample_ActiveIntake](TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AngelosBase/Samples/Sample_ActiveIntake.java))
 ```java
 package org.firstinspires.ftc.teamcode.AngelosBase.Samples;
 
@@ -149,14 +150,14 @@ public class Sample_ActiveIntake extends LinearOpMode {
 
 # ⏱️ Timer Utility
 
-A simple helper that counts how much time has passed. It helps you build timing sequences without freezing your entire robot program (never use `sleep()` inside active driver loops).
+A simple helper that tracks how much time has passed. It helps you build timing sequences without blocking your entire robot program (never use `sleep()` inside active driver loops).
 
 ## 🛠️ Functions
 * `resetTimer()`: Starts the clock from zero right now.
-* `getCurTimeSecs()`: Tells you exactly how many seconds have passed since your last reset (e.g. `2.54` seconds).
+* `getCurTimeSecs()`: Returns how many seconds have passed since your last reset (e.g. `2.54` seconds).
 * `getCurTime()`: Gives the elapsed time in raw milliseconds.
 
-## 🚀 Sample Implementation ([Sample_Timer](TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AngelosBase/Samples/Samples/Sample_Timer.java))
+## 🚀 Sample Implementation ([Sample_Timer](TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AngelosBase/Samples/Sample_Timer.java))
 ```java
 package org.firstinspires.ftc.teamcode.AngelosBase.Samples;
 
